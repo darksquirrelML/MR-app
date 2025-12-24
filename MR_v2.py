@@ -219,6 +219,12 @@
 # In[ ]:
 
 
+# !pip install streamlit pandas Pillow gspread google-auth google-auth-oauthlib google-auth-httplib2
+
+
+# In[ ]:
+
+
 import streamlit as st
 import pandas as pd
 import os
@@ -227,6 +233,15 @@ from PIL import Image
 import gspread
 from google.oauth2.service_account import Credentials
 
+
+
+try:
+    import gspread
+except ImportError:
+    st.error("gspread not installed. Check requirements.txt")
+    st.stop()
+
+    
 # -------------------------
 # Connect to Google Sheet
 # -------------------------
@@ -339,7 +354,4 @@ with st.form("order_form"):
                 st.balloons()
             except Exception as e:
                 st.error(f"Failed to submit order: {e}")
-
-
-
 
