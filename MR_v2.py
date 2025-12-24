@@ -10,6 +10,30 @@ import os
 from datetime import datetime
 from PIL import Image
 
+#### Google Sheets ######
+import gspread
+from google.oauth2.service_account import Credentials
+
+
+
+######################## Google Connection Function ################################
+
+def connect_gsheet():
+    scope = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
+
+    creds = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=scope
+    )
+
+    client = gspread.authorize(creds)
+    sheet = client.open("Material Orders").sheet1
+    return sheet
+
+
 # -------------------------
 # Page config
 # -------------------------
@@ -87,6 +111,31 @@ with st.form("order_form"):
 
         st.divider()
 
+#     # -------------------------
+#     # Submit order
+#     # -------------------------
+#     submitted = st.form_submit_button("✅ Submit Order")
+
+#     if submitted:
+#         if not ordered_by or not project_code:
+#             st.warning("Please enter both Ordered By and Project Code.")
+#         elif not order_list:
+#             st.warning("No material selected.")
+#         else:
+#             order_df = pd.DataFrame(order_list)
+#             order_df["ordered_by"] = ordered_by
+#             order_df["project_code"] = project_code
+#             order_df["time"] = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+#             orders_file = os.path.join("data", "orders.csv")
+#             if not os.path.exists(orders_file):
+#                 order_df.to_csv(orders_file, index=False)
+#             else:
+#                 order_df.to_csv(orders_file, mode="a", header=False, index=False)
+
+#             st.success("Order submitted successfully 👍")
+#             st.balloons()
+            
     # -------------------------
     # Submit order
     # -------------------------
@@ -98,16 +147,18 @@ with st.form("order_form"):
         elif not order_list:
             st.warning("No material selected.")
         else:
-            order_df = pd.DataFrame(order_list)
-            order_df["ordered_by"] = ordered_by
-            order_df["project_code"] = project_code
-            order_df["time"] = datetime.now().strftime("%Y-%m-%d %H:%M")
+            time_now = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-            orders_file = os.path.join("data", "orders.csv")
-            if not os.path.exists(orders_file):
-                order_df.to_csv(orders_file, index=False)
-            else:
-                order_df.to_csv(orders_file, mode="a", header=False, index=False)
+            for item in order_list:
+                sheet.append_row([
+                    time_now,
+                    ordered_by,
+                    project_code,
+                    item["code"],
+                    item["name"],
+                    item["quantity"],
+                    item["unit"]
+                ])
 
             st.success("Order submitted successfully 👍")
             st.balloons()
