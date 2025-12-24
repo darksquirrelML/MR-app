@@ -135,7 +135,7 @@ with st.form("order_form"):
 
 #             st.success("Order submitted successfully 👍")
 #             st.balloons()
-            
+
     # -------------------------
     # Submit order
     # -------------------------
@@ -149,17 +149,73 @@ with st.form("order_form"):
         else:
             time_now = datetime.now().strftime("%Y-%m-%d %H:%M")
 
+            sheet = connect_gsheet()
+
             for item in order_list:
                 sheet.append_row([
-                    time_now,
                     ordered_by,
                     project_code,
+                    category,
                     item["code"],
                     item["name"],
                     item["quantity"],
-                    item["unit"]
+                    item["unit"],
+                    time_now
                 ])
 
             st.success("Order submitted successfully 👍")
             st.balloons()
+
+
+
+
+
+
+
+            
+#     # -------------------------
+#     # Submit order
+#     # -------------------------
+#     submitted = st.form_submit_button("✅ Submit Order")
+
+#     if submitted:
+#         if not ordered_by or not project_code:
+#             st.warning("Please enter both Ordered By and Project Code.")
+#         elif not order_list:
+#             st.warning("No material selected.")
+#         else:
+#             time_now = datetime.now().strftime("%Y-%m-%d %H:%M")
+            
+#             sheet = connect_gsheet()
+
+#             for item in order_list:
+#                 sheet.append_row([
+#                     ordered_by,
+#                     project_code,
+#                     category,
+#                     item["code"],
+#                     item["name"],
+#                     item["quantity"],
+#                     item["unit"],
+#                     datetime.now().strftime("%Y-%m-%d %H:%M")
+#                 ])
+
+#             st.success("Order submitted successfully 👍")
+#             st.balloons()
+
+
+#             for item in order_list:
+#                 sheet.append_row([
+#                     time_now,
+#                     ordered_by,
+#                     project_code,
+#                     item["code"],
+#                     item["name"],
+#                     item["quantity"],
+#                     item["unit"]
+#                 ])
+
+#             st.success("Order submitted successfully 👍")
+#             st.balloons()
+
 
